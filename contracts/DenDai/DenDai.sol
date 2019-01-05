@@ -75,6 +75,10 @@ contract DenDai is ERC20Mintable {
 
   //wrapped ETH functions borrowed from
   //https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code
+
+  //Stupid hack to get things going
+  mapping (address => uint256) public _balances;
+
   function() public payable {
       deposit();
   }
@@ -82,6 +86,7 @@ contract DenDai is ERC20Mintable {
     _balances[msg.sender] += msg.value;
     Deposit(msg.sender, msg.value);
   }
+
   event  Deposit(address indexed dst, uint wad);
 
   function withdraw(uint wad) public {
