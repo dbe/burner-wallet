@@ -151,6 +151,18 @@ module.exports = {
         result = await clevis("contract","updateAdmin","DenDai","0","0x2a906694d15df38f59e76ed3a5735f8aabcce9cb","true")
         printTxResult(result)
 
+
+
+        result = await clevis("sendTo","0.10","0","0x34aa3f359a9d614239015126635ce7732c18fdf3")///<<<-------- change this to your metamask accounts
+        printTxResult(result)
+        result = await clevis("contract","updateAdmin","DenDai","0","0x34aa3f359a9d614239015126635ce7732c18fdf3","true")
+        printTxResult(result)
+        result = await clevis("contract","mint","DenDai","0","0x34aa3f359a9d614239015126635ce7732c18fdf3","10000000000000000000")
+        printTxResult(result)
+
+
+
+
         /*printTxResult(result)
         for(let a=1;a<9;a++){
           result = await clevis("sendTo",""+(0.05*a),"2","0x0ca60587993c418904728f70bec0b164b55a8fb0")///<<<-------- change this to your metamask accounts
@@ -158,7 +170,7 @@ module.exports = {
 
         result = await clevis("sendTo","1.99","0","0x548395928fee26be5ccc6de0c3a3411b416570a8")
         printTxResult(result)
-        result = await clevis("sendTo","0.10","0","0x5fe7b1415f205e04330271ab87eefffe59718473")
+        result = await clevis("sendTo","0.10","0","0xfe49026946f11cb51c2d1b273346f34c07e5ab69")
         printTxResult(result)
         result = await clevis("sendTo","0.10","0","0x2a906694d15df38f59e76ed3a5735f8aabcce9cb")
         printTxResult(result)
@@ -169,6 +181,38 @@ module.exports = {
 
         result = await clevis("contract","mint","DenDai","0","0x2a906694d15df38f59e76ed3a5735f8aabcce9cb","1000000000000000000")
         printTxResult(result)
+
+        result = await clevis("contract","mint","DenDai","0","0xfe49026946f11cb51c2d1b273346f34c07e5ab69","1000000000000000000")
+        printTxResult(result)
+
+
+        result = await clevis("sendTo","0.10","0","0xa6b068b1ae5f781aabba9ba7a6c67491e4dd5e8a")
+        printTxResult(result)
+        result = await clevis("contract","mint","DenDai","0","0xa6b068b1ae5f781aabba9ba7a6c67491e4dd5e8a","1000000000000000000")
+        printTxResult(result)
+
+
+        result = await clevis("sendTo","0.10","0","0x6497e454db92af76df6a917435d0a8ecbe4e9903")
+        printTxResult(result)
+        result = await clevis("contract","mint","DenDai","0","0x6497e454db92af76df6a917435d0a8ecbe4e9903","1000000000000000000")
+        printTxResult(result)
+
+
+        result = await clevis("sendTo","0.10","0","0x5f19cefc9c9d1bc63f9e4d4780493ff5577d238b")
+        printTxResult(result)
+        result = await clevis("contract","mint","DenDai","0","0x5f19cefc9c9d1bc63f9e4d4780493ff5577d238b","1000000000000000000")
+        printTxResult(result)
+
+
+        result = await clevis("sendTo","0.10","0","0xb2fdf690e10643a129e3f2e95d8687500f9008e5")
+        printTxResult(result)
+        result = await clevis("contract","mint","DenDai","0","0xb2fdf690e10643a129e3f2e95d8687500f9008e5","36000000000000000000")
+        printTxResult(result)
+
+
+
+
+
         //result = await clevis("sendTo","5","0","0x34aa3f359a9d614239015126635ce7732c18fdf3")///<<<-------- change this to your metamask accounts
         //printTxResult(result)
         //here is an example of running a funtion from within this object:
