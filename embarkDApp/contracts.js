@@ -33,10 +33,29 @@ module.exports = {
     ],
     gas: "auto",
     contracts: {
-      // example:
-      //SimpleStorage: {
-      //  args: [ 100 ]
-      //}
+      //Lib contracts
+      AdministratorRole: {
+        deploy: false
+      },
+      ERC20: {
+        deploy: false
+      },
+      ERC20Vendable: {
+        deploy: false
+      },
+      SafeMath: {
+        deploy: false
+      },
+      Roles: {
+        deploy: false
+      },
+      WhitelistedRole: {
+        deploy: false
+      },
+      //Actual contracts
+      VendingMachine: {
+        args: [  ]
+      },
     }
   },
 
