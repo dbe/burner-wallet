@@ -1,43 +1,49 @@
-// /*global contract, config, it, assert*/
-/*
-const SimpleStorage = require('Embark/contracts/SimpleStorage');
+/*global contract, config, embark, it, web3, before*/
+
+const VendingMachine = require('Embark/contracts/VendingMachine');
+const ERC20Vendable = require('Embark/contracts/ERC20Vendable');
+const expect = require('chai').expect
 
 let accounts;
 
-// For documentation please see https://embark.status.im/docs/contracts_testing.html
 config({
-  //deployment: {
-  //  accounts: [
-  //    // you can configure custom accounts with a custom balance
-  //    // see https://embark.status.im/docs/contracts_testing.html#Configuring-accounts
-  //  ]
-  //},
   contracts: {
-    "SimpleStorage": {
-      args: [100]
+    "VendingMachine": {
+      args: []
     }
   }
-}, (_err, web3_accounts) => {
-  accounts = web3_accounts
+}, (err, theAccounts) => {
+  accounts = theAccounts;
 });
 
-contract("SimpleStorage", function () {
-  this.timeout(0);
-
-  it("should set constructor value", async function () {
-    let result = await SimpleStorage.methods.storedData().call();
-    assert.strictEqual(parseInt(result, 10), 100);
+contract("VendingMachine", function () {
+  debugger;
+  before(async function() {
+    let tokenAddress = await VendingMachine.methods.tokenContract().call();
+    ERC20Vendable.options.address = tokenAddress;
   });
 
-  it("set storage value", async function () {
-    await SimpleStorage.methods.set(150).send();
-    let result = await SimpleStorage.methods.get().call();
-    assert.strictEqual(parseInt(result, 10), 150);
+  it("should create a ERC20Vendable token", async function () {
+    let tokenAddress = await VendingMachine.methods.tokenContract().call();
+    expect(tokenAddress, "Vendable token not deployed").to.exist;
   });
 
-  it("should have account with balance", async function() {
-    let balance = await web3.eth.getBalance(accounts[0]);
-    assert.ok(parseInt(balance, 10) > 0);
+  it("should configure ERC20Vendable correctly", async function () {
+    let supply = await ERC20Vendable.methods.totalSupply().call();
+    expect(supply, "Tokens should not exist on init").to.equal('0');
+
+    let creator = await ERC20Vendable.methods.creator().call();
+    expect(creator, "Creator should be the VendingMachine").to.equal(VendingMachine.options.address);
   });
-}
-*/
+
+  // it("set storage value", async function () {
+  //   await SimpleStorage.methods.set(150).send();
+  //   let result = await SimpleStorage.methods.get().call();
+  //   assert.strictEqual(parseInt(result, 10), 150);
+  // });
+  //
+  // it("should have account with balance", async function() {
+  //   let balance = await web3.eth.getBalance(accounts[0]);
+  //   assert.ok(parseInt(balance, 10) > 0);
+  // });
+});
