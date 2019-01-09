@@ -1,9 +1,9 @@
 {
-  "contracts": ["embarkDapp/contracts/**"],
+  "contracts": ["embark/contracts/**"],
   "app": {},
-  "buildDir": "embarkDapp/build/",
+  "buildDir": "embark/build/",
   "config": {
-    "contracts": "embarkDapp/contracts.js",
+    "contracts": "embark/contracts.js",
     "blockchain": false,
     "storage": false,
     "communication": false,
