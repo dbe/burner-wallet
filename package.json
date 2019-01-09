@@ -58,6 +58,7 @@
   ],
   "devDependencies": {
     "embark": "^3.2.7",
+    "openzeppelin-solidity": "^2.0.0",
     "solc": "^0.5.2"
   }
 }
