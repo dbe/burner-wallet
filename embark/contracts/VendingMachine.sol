@@ -47,7 +47,8 @@ contract VendingMachine is AdministratorRole, WhitelistedRole {
   struct Vendor {
     bytes32 name;
     bool isActive; //let's vendor indicate if they are open at the time
-    bool isAllowed; //let's admin turn them off
+    bool isAllowed; //let's admin turn them off,
+    bool exists;
   }
 
   /* struct Product {
@@ -59,12 +60,13 @@ contract VendingMachine is AdministratorRole, WhitelistedRole {
   } */
 
   function addVendor(address _vendorAddress, bytes32 _name) public onlyAdministrator {
-    require(!vendors[_vendorAddress], "This address already is a vendor.");
+    require(!vendors[_vendorAddress].exists, "This address already is a vendor.");
 
     vendors[_vendorAddress] = Vendor({
       name: _name,
       isActive: false,
-      isAllowed: true
+      isAllowed: true,
+      exists: true
     });
 
     _emitUpdateVendor(_vendorAddress);
@@ -85,7 +87,7 @@ contract VendingMachine is AdministratorRole, WhitelistedRole {
   }
 
   function _updateVendor(address _vendorAddress, bytes32 _name, bool _isActive, bool _isAllowed) private {
-    require(vendors[_vendorAddress], "Cannot update a non-existent vendor");
+    require(vendors[_vendorAddress].exists, "Cannot update a non-existent vendor");
 
     vendors[_vendorAddress].name = _name;
     vendors[_vendorAddress].isActive = _isActive;
@@ -94,7 +96,7 @@ contract VendingMachine is AdministratorRole, WhitelistedRole {
     _emitUpdateVendor(_vendorAddress);
   }
 
-  function _emitUpdateVendor(adresss _vendorAddress) private {
+  function _emitUpdateVendor(address _vendorAddress) private {
     emit UpdateVendor(
       _vendorAddress,
       vendors[_vendorAddress].name,

@@ -78,4 +78,36 @@ contract("VendingMachine", function () {
     let tokenBalance = await ERC20Vendable.methods.balanceOf(accounts[0]).call();
     expect(tokenBalance).to.equal('0')
   });
+
+  it("should be able to add a Vendor", async function () {
+    await VendingMachine.methods.addVendor(
+      accounts[1],
+      web3.utils.utf8ToHex("First Vendor")
+    ).send({from: accounts[0]});
+
+    let vendor = await VendingMachine.methods.vendors(accounts[1]).call();
+    expect(web3.utils.hexToUtf8(vendor.name)).to.equal("First Vendor");
+    expect(vendor.isActive).to.equal(false);
+    expect(vendor.isAllowed).to.equal(true);
+    expect(vendor.exists).to.equal(true);
+  });
+
+  it("should not be able to add the same vendor twice", async function () {
+    let tx = VendingMachine.methods.addVendor(
+      accounts[1],
+      web3.utils.utf8ToHex("Second Vendor")
+    ).send({from: accounts[0]});
+
+    await assert.rejects(tx, "Should not allow the same vendor to be created twice.");
+  });
+
+  it("should not be able to add a vendor unless an Administrator", async function () {
+    let tx = VendingMachine.methods.addVendor(
+      accounts[2],
+      web3.utils.utf8ToHex("Third Vendor")
+    ).send({from: accounts[1]});
+
+    await assert.rejects(tx, "Should not allow the a non-admin to create vendors.");
+  });
+
 });
