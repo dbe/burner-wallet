@@ -1,4 +1,4 @@
-/*global contract, config, embark, it, web3, before*/
+/*global assert, contract, config, embark, it, web3, before*/
 
 const VendingMachine = require('Embark/contracts/VendingMachine');
 const ERC20Vendable = require('Embark/contracts/ERC20Vendable');
@@ -28,13 +28,15 @@ contract("VendingMachine", function () {
   });
 
   it("should configure ERC20Vendable correctly", async function () {
-    ERC20Vendable.methods.totalSupply().call().then(supply => {
-      expect(supply, "Tokens should not exist on init").to.equal('0');
-    });
+    return Promise.all([
+      ERC20Vendable.methods.totalSupply().call().then(supply => {
+        expect(supply, "Tokens should not exist on init").to.equal('0');
+      }),
 
-    ERC20Vendable.methods.creator().call().then(creator => {
-      expect(creator, "Creator should be the VendingMachine").to.equal(VendingMachine.options.address);
-    });
+      ERC20Vendable.methods.creator().call().then(creator => {
+        expect(creator, "Creator should be the VendingMachine").to.equal(VendingMachine.options.address);
+      })
+    ]);
   });
 
   it("should mint correctly with fallback", async function () {
@@ -46,12 +48,19 @@ contract("VendingMachine", function () {
         value: 100
       })
 
-    web3.eth.getBalance(vmAddr).then(balance => {
-      expect(balance).to.equal('100')
-    })
+    return Promise.all([
+      web3.eth.getBalance(vmAddr).then(balance => {
+        expect(balance).to.equal('100')
+      }),
 
-    ERC20Vendable.methods.balanceOf(accounts[0]).call().then(balance => {
-      expect(balance).to.equal('100')
-    });
+      ERC20Vendable.methods.balanceOf(accounts[0]).call().then(balance => {
+        expect(balance).to.equal('100')
+      })
+    ]);
+  });
+
+  it("should not allow unauthorized withdrawls", async function () {
+    let tx = VendingMachine.methods.withdraw(100).send({from: accounts[0]});
+    await assert.rejects(tx, "Should reject this tx")
   });
 });
