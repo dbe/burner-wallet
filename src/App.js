@@ -26,6 +26,7 @@ import BurnWallet from './components/BurnWallet'
 import Exchange from './components/Exchange'
 import customRPCHint from './customRPCHint.png';
 import bufficorn from './bufficorn.png';
+import cypherpunk from './cypherpunk.png';
 
 const EthCrypto = require('eth-crypto');
 
@@ -63,10 +64,15 @@ else if (window.location.hostname.indexOf("dendai") >= 0) {
   CLAIM_RELAY = 'https://x.xdai.io'
   ERC20TOKEN = 'DenDai'
 }
+else if (window.location.hostname.indexOf("burnerwallet.io") >= 0) {
+  WEB3_PROVIDER = "https://dai.poa.network";
+  CLAIM_RELAY = 'https://x.xdai.io'
+  ERC20TOKEN = 'Burner'
+}
 else if (window.location.hostname.indexOf("localhost") >= 0) {
   WEB3_PROVIDER = "https://dai.poa.network";
   CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20TOKEN = 'DenDai'
+  ERC20TOKEN = 'Burner'
 }
 
 if(ERC20TOKEN=="DenDai"){
@@ -76,6 +82,18 @@ if(ERC20TOKEN=="DenDai"){
   title = "ETHDenverDAI"
   titleImage = (
     <img src={bufficorn} style={{
+      maxWidth:50,
+      maxHeight:50,
+      marginTop:-24
+    }}/>
+  )
+} else if(ERC20TOKEN=="Burner"){
+  mainStyle.backgroundImage = "linear-gradient(#4923d8, #6c0664)"
+  mainStyle.backgroundColor = "#6c0664"
+  mainStyle.mainColor = "#e72da3"
+  title = "Speakeasy"
+  titleImage = (
+    <img src={cypherpunk} style={{
       maxWidth:50,
       maxHeight:50,
       marginTop:-24
@@ -140,9 +158,10 @@ class App extends Component {
         console.log("DO CLAIM",claimId,claimKey)
         this.setState({claimId,claimKey})
         window.history.pushState({},"", "/");
-      }else if(window.location.pathname.length>=65&&window.location.pathname.length<=67&&window.location.pathname.indexOf(";")<0){
+      }else if(window.location.pathname.length>=65&&window.location.pathname.length<=68&&window.location.pathname.indexOf(";")<0){
         console.log("incoming private key")
         let privateKey = window.location.pathname.replace("/","")
+        privateKey = privateKey.replace("#","")
         if(privateKey.indexOf("0x")!=0){
           privateKey="0x"+privateKey
         }
@@ -179,11 +198,11 @@ class App extends Component {
     if(ERC20TOKEN&&this.state.contracts){
       let gasBalance = await this.state.web3.eth.getBalance(this.state.account)
       gasBalance = this.state.web3.utils.fromWei(""+gasBalance,'ether')
-      let denDaiBalance = await this.state.contracts.DenDai.balanceOf(this.state.account).call()
+      let denDaiBalance = await this.state.contracts[ERC20TOKEN].balanceOf(this.state.account).call()
       denDaiBalance = this.state.web3.utils.fromWei(""+denDaiBalance,'ether')
-      let isAdmin = await this.state.contracts.DenDai.admin(this.state.account).call()
+      let isAdmin = await this.state.contracts[ERC20TOKEN].admin(this.state.account).call()
       //console.log("ISADMIN",isAdmin)
-      let isVendor = await this.state.contracts.DenDai.vendors(this.state.account).call()
+      let isVendor = await this.state.contracts[ERC20TOKEN].vendors(this.state.account).call()
       //console.log("isVendor",isVendor)
       this.setState({gasBalance:gasBalance,balance:denDaiBalance,isAdmin:isAdmin,isVendor:isVendor})
     }
@@ -648,6 +667,7 @@ class App extends Component {
                   moreButtons = (
                     <div>
                       <Vendor
+                        ERC20TOKEN={ERC20TOKEN}
                         address={account}
                         mainStyle={mainStyle}
                         changeView={this.changeView}
@@ -657,6 +677,15 @@ class App extends Component {
                         web3={this.state.web3}
                         dollarDisplay={dollarDisplay}
                       />
+                      <MoreButtons
+                        mainStyle={mainStyle}
+                        changeView={this.changeView}
+                      />
+                    </div>
+                  )
+                }else if(ERC20TOKEN=="Burner"){
+                  moreButtons = (
+                    <div>
                       <MoreButtons
                         mainStyle={mainStyle}
                         changeView={this.changeView}
@@ -686,7 +715,7 @@ class App extends Component {
                     <div>
                       <Events
                         config={{hide:true}}
-                        contract={this.state.contracts.DenDai}
+                        contract={this.state.contracts[ERC20TOKEN]}
                         eventName={"Transfer"}
                         block={this.state.block}
                         filter={{from:this.state.account}}
@@ -694,7 +723,7 @@ class App extends Component {
                       />
                       <Events
                         config={{hide:true}}
-                        contract={this.state.contracts.DenDai}
+                        contract={this.state.contracts[ERC20TOKEN]}
                         eventName={"Transfer"}
                         block={this.state.block}
                         filter={{to:this.state.account}}
@@ -702,7 +731,7 @@ class App extends Component {
                       />
                       <Events
                         config={{hide:true}}
-                        contract={this.state.contracts.DenDai}
+                        contract={this.state.contracts[ERC20TOKEN]}
                         eventName={"TransferWithData"}
                         block={this.state.block}
                         filter={{from:this.state.account}}
@@ -710,7 +739,7 @@ class App extends Component {
                       />
                       <Events
                         config={{hide:true}}
-                        contract={this.state.contracts.DenDai}
+                        contract={this.state.contracts[ERC20TOKEN]}
                         eventName={"TransferWithData"}
                         block={this.state.block}
                         filter={{to:this.state.account}}
@@ -718,7 +747,7 @@ class App extends Component {
                       />
                       <Events
                         config={{hide:true}}
-                        contract={this.state.contracts.DenDai}
+                        contract={this.state.contracts[ERC20TOKEN]}
                         eventName={"UpdateVendor"}
                         block={this.state.block}
                         onUpdate={(vendor, all)=>{
@@ -915,6 +944,7 @@ class App extends Component {
                       <div>
                         <NavCard title={"Exchange"} goBack={this.goBack.bind(this)}/>
                         <Exchange
+                          ERC20IMAGE={cypherpunk}
                           ERC20TOKEN={ERC20TOKEN}
                           contracts={this.state.contracts}
                           mainStyle={mainStyle}
@@ -936,6 +966,7 @@ class App extends Component {
                       <div>
                         <NavCard title={'Vendors'} goBack={this.goBack.bind(this)}/>
                         <Vendors
+                          ERC20TOKEN={ERC20TOKEN}
                           vendors={this.state.vendors}
                           address={account}
                           mainStyle={mainStyle}
@@ -1122,15 +1153,15 @@ async function tokenSend(to,value,gasLimit,txData,cb){
     console.log("sending with meta account:",this.state.metaAccount.address)
 
     let tx={
-      to:this.state.contracts.DenDai._address,
+      to:this.state.contracts[ERC20TOKEN]._address,
       value: 0,
       gas: setGasLimit,
-      gasPrice: Math.round(this.state.gwei * 1000000000)
+      gasPrice: Math.round(this.state.gwei * 1010101010)
     }
     if(data){
-      tx.data = this.state.contracts.DenDai.transferWithData(to,weiValue,data).encodeABI()
+      tx.data = this.state.contracts[ERC20TOKEN].transferWithData(to,weiValue,data).encodeABI()
     }else{
-      tx.data = this.state.contracts.DenDai.transfer(to,weiValue).encodeABI()
+      tx.data = this.state.contracts[ERC20TOKEN].transfer(to,weiValue).encodeABI()
     }
     console.log("TX SIGNED TO METAMASK:",tx)
     this.state.web3.eth.accounts.signTransaction(tx, this.state.metaAccount.privateKey).then(signed => {
@@ -1150,16 +1181,16 @@ async function tokenSend(to,value,gasLimit,txData,cb){
     }
     let txObject = {
       from:this.state.account,
-      to:this.state.contracts.DenDai._address,
+      to:this.state.contracts[ERC20TOKEN]._address,
       value: 0,
       gas: setGasLimit,
       gasPrice: Math.round(this.state.gwei * 1000000000)
     }
 
     if(data){
-      txObject.data = this.state.contracts.DenDai.transferWithData(to,weiValue,data).encodeABI()
+      txObject.data = this.state.contracts[ERC20TOKEN].transferWithData(to,weiValue,data).encodeABI()
     }else{
-      txObject.data = this.state.contracts.DenDai.transfer(to,weiValue).encodeABI()
+      txObject.data = this.state.contracts[ERC20TOKEN].transfer(to,weiValue).encodeABI()
     }
 
 

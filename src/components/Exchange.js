@@ -5,7 +5,6 @@ import { Scaler } from "dapparatus";
 import eth from '../ethereum.png';
 import dai from '../dai.jpg';
 import xdai from '../xdai.jpg';
-import dendai from '../bufficorn.png';
 import wyre from '../wyre.jpg';
 import coinbase from '../coinbase.jpg';
 import localeth from '../localeth.png';
@@ -17,6 +16,7 @@ const GASBOOSTPRICE = 0.1
 
 const logoStyle = {
   maxWidth:50,
+  maxHeight:50,
 }
 
 const colStyle = {
@@ -92,8 +92,8 @@ export default class Exchange extends React.Component {
     let dendaiContract
     if(props.ERC20TOKEN){
       try{
-        console.log("Loading DenDai Contract...")
-        dendaiContract = new xdaiweb3.eth.Contract(require("../contracts/DenDai.abi.js"),require("../contracts/DenDai.address.js"))
+        console.log("Loading "+props.ERC20TOKEN+" Contract...")
+        dendaiContract = new xdaiweb3.eth.Contract(require("../contracts/"+props.ERC20TOKEN+".abi.js"),require("../contracts/"+props.ERC20TOKEN+".address.js"))
       }catch(e){
         console.log("ERROR LOADING dendaiContract Contract",e)
       }
@@ -716,7 +716,7 @@ export default class Exchange extends React.Component {
                   }else{
                     console.log("Use MetaMask to withdraw DenDai to xDai")
                     this.props.tx(
-                      this.props.contracts.DenDai.deposit()
+                      this.props.contracts[this.props.ERC20TOKEN].deposit()
                     ,120000,0,amountOfxDaiToDeposit,(receipt)=>{
                       if(receipt){
                         console.log("EXCHANGE COMPLETE?!?",receipt)
@@ -822,7 +822,7 @@ export default class Exchange extends React.Component {
                   }else{
                     console.log("Use MetaMask to withdraw DenDai to xDai")
                     this.props.tx(
-                      this.props.contracts.DenDai.withdraw(""+amountOfxDaiToWithdraw)
+                      this.props.contracts[this.props.ERC20TOKEN].withdraw(""+amountOfxDaiToWithdraw)
                     ,120000,0,0,(receipt)=>{
                       if(receipt){
                         console.log("EXCHANGE COMPLETE?!?",receipt)
@@ -850,7 +850,7 @@ export default class Exchange extends React.Component {
                  this.setState({xdaiToDendaiMode:"deposit"})
                }}>
                   <Scaler config={{startZoomAt:500,origin:"10% 50%"}}>
-                    <i className="fas fa-arrow-up"  /> xDai to DenDai
+                    <i className="fas fa-arrow-up"  /> xDai to {this.props.ERC20TOKEN}
                   </Scaler>
                </button>
              </div>
@@ -860,7 +860,7 @@ export default class Exchange extends React.Component {
                  this.setState({xdaiToDendaiMode:"withdraw"})
                }}>
                  <Scaler config={{startZoomAt:500,origin:"10% 50%"}}>
-                  <i className="fas fa-arrow-down" /> DenDai to xDai
+                  <i className="fas fa-arrow-down" /> {this.props.ERC20TOKEN} to xDai
                  </Scaler>
                </button>
              </div>
@@ -873,10 +873,10 @@ export default class Exchange extends React.Component {
           <div className="main-card card w-100">
             <div className="content ops row">
               <div className="col-2 p-1">
-                <img style={logoStyle} src={dendai} />
+                <img style={logoStyle} src={this.props.ERC20IMAGE} />
               </div>
               <div className="col-3 p-1" style={{marginTop:8}}>
-                DenDai
+                {this.props.ERC20TOKEN}
               </div>
               <div className="col-5 p-1" style={{marginTop:8,whiteSpace:"nowrap"}}>
                   <Scaler config={{startZoomAt:500,origin:"10% 50%"}}>
