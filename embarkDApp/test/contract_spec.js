@@ -3,6 +3,7 @@
 const VendingMachine = require('Embark/contracts/VendingMachine');
 const ERC20Vendable = require('Embark/contracts/ERC20Vendable');
 const expect = require('chai').expect
+const BN = web3.utils.BN;
 
 let accounts;
 
@@ -62,5 +63,19 @@ contract("VendingMachine", function () {
   it("should not allow unauthorized withdrawls", async function () {
     let tx = VendingMachine.methods.withdraw(100).send({from: accounts[0]});
     await assert.rejects(tx, "Should reject this tx")
+  });
+
+  it("should allow whitelisted withdrawls", async function () {
+    await VendingMachine.methods.addWhitelisted(accounts[0]).send({from: accounts[0]});
+
+    let balanceBefore = new BN(await web3.eth.getBalance(accounts[0]))
+    let tx = await VendingMachine.methods.withdraw(100).send({from: accounts[0], gasPrice: 1});
+    let balanceAfter = await web3.eth.getBalance(accounts[0]);
+
+    let expected = balanceBefore.sub(new BN(tx.gasUsed)).add(new BN(100)).toString();
+    expect(expected).to.equal(balanceAfter)
+
+    let tokenBalance = await ERC20Vendable.methods.balanceOf(accounts[0]).call();
+    expect(tokenBalance).to.equal('0')
   });
 });
