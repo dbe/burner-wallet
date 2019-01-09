@@ -17,7 +17,6 @@ config({
 });
 
 contract("VendingMachine", function () {
-  debugger;
   before(async function() {
     let tokenAddress = await VendingMachine.methods.tokenContract().call();
     ERC20Vendable.options.address = tokenAddress;
@@ -29,10 +28,30 @@ contract("VendingMachine", function () {
   });
 
   it("should configure ERC20Vendable correctly", async function () {
-    let supply = await ERC20Vendable.methods.totalSupply().call();
-    expect(supply, "Tokens should not exist on init").to.equal('0');
+    ERC20Vendable.methods.totalSupply().call().then(supply => {
+      expect(supply, "Tokens should not exist on init").to.equal('0');
+    });
 
-    let creator = await ERC20Vendable.methods.creator().call();
-    expect(creator, "Creator should be the VendingMachine").to.equal(VendingMachine.options.address);
+    ERC20Vendable.methods.creator().call().then(creator => {
+      expect(creator, "Creator should be the VendingMachine").to.equal(VendingMachine.options.address);
+    });
+  });
+
+  it("should mint correctly with fallback", async function () {
+    const vmAddr = VendingMachine.options.address;
+
+    await web3.eth.sendTransaction( {
+        from: accounts[0],
+        to: vmAddr,
+        value: 100
+      })
+
+    web3.eth.getBalance(vmAddr).then(balance => {
+      expect(balance).to.equal('100')
+    })
+
+    ERC20Vendable.methods.balanceOf(accounts[0]).call().then(balance => {
+      expect(balance).to.equal('100')
+    });
   });
 });
